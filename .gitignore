@@ -1,0 +1,16 @@
+# סביבה
+.env
+venv/
+
+# נתונים רגישים - לעולם לא ל-GitHub!
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+**/__pycache__/
+*.cpython-*.pyc
+
+# Mac
+.DS_Store
