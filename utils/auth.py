@@ -10,7 +10,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
 
 def generate_token(user_id: str) -> str:
-    """יוצר JWT token למשתמש מחובר"""
+    """Create a JWT token for an authenticated user"""
     payload = {
         "user_id": user_id,
         "exp": datetime.utcnow() + timedelta(hours=24)
@@ -18,7 +18,7 @@ def generate_token(user_id: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
 def require_auth(f):
-    """decorator — מגן על endpoints שדורשים התחברות"""
+    """Decorator that protects endpoints requiring authentication."""
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get("Authorization", "").replace("Bearer ", "")
