@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.secret import create_secret, get_secret, update_secret, delete_secret, list_secrets_for_user
 from utils.auth import require_auth
 from utils.encryption import encrypt, decrypt
+from utils.logger import log_event
 
 secrets_bp = Blueprint("secrets", __name__)
 
@@ -19,6 +20,7 @@ def store_secret():
 
     encrypted_value = encrypt(value)
     secret = create_secret(request.user_id, name, encrypted_value, description)
+    log_event("SECRET_CREATED", request.user_id, f"name={name}")
     return jsonify({"message": "Secret stored successfully", "id": secret["id"]}), 201
 
 
@@ -44,7 +46,9 @@ def get_secret_by_id(secret_id):
         return jsonify({"error": "Access denied"}), 403
 
     secret["value"] = decrypt(secret["encrypted_value"])
+    log_event("SECRET_ACCESSED", request.user_id, f"secret_id={secret_id}")
     del secret["encrypted_value"]
+    
     return jsonify(secret), 200
 
 
@@ -78,4 +82,6 @@ def delete_secret_by_id(secret_id):
         return jsonify({"error": "Access denied"}), 403
 
     delete_secret(secret_id)
+    log_event("SECRET_DELETED", request.user_id, f"secret_id={secret_id}")
+
     return jsonify({"message": "Secret deleted successfully"}), 200
